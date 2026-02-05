@@ -1,0 +1,57 @@
+set ignoreTypes = attacker.
+
+free Pub : channel.
+
+(* ---------- Types ---------- *)
+type piid.        (* pseudo-indistinguishable identity *)
+type receiver.
+type skey.
+type tag.
+
+(* ---------- Secrets ---------- *)
+free masterSecret : bitstring [private].
+free skS : skey [private].
+
+(* ---------- Cryptographic Primitives ---------- *)
+
+(* Abstract authenticated primitive (PQ signature/MAC) *)
+fun sign(bitstring, skey): bitstring.
+
+(* PUF-derived authentication tag *)
+fun verifTag(piid, bitstring, bitstring): tag.
+
+(* ---------- Events ---------- *)
+event beginBroadcast(piid, bitstring).
+event acceptBroadcast(piid, bitstring, receiver).
+
+(* ---------- Security Property ---------- *)
+(* Authenticated broadcast (non-injective) *)
+query p:piid, m:bitstring, r:receiver;
+  event(acceptBroadcast(p,m,r)) ==> event(beginBroadcast(p,m)).
+
+(* ---------- Sender ---------- *)
+let Sender =
+  in(Pub, p:piid);
+  new m:bitstring;
+
+  let t = verifTag(p, m, masterSecret) in
+  let s = sign((m, t), skS) in
+
+  event beginBroadcast(p, m);
+  out(Pub, (p, m, t, s)).
+
+(* ---------- Receiver ---------- *)
+let Receiver =
+  new r:receiver;
+  in(Pub, (p:piid, m:bitstring, t:tag, s:bitstring));
+
+  if t = verifTag(p, m, masterSecret) &&
+     s = sign((m, t), skS) then
+       event acceptBroadcast(p, m, r).
+
+(* ---------- System ---------- *)
+process
+  (
+    !Sender
+  | !Receiver
+  )
