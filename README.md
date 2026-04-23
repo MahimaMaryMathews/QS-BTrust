@@ -2,19 +2,6 @@
 
 ---
 
-## Features
-
-- PUF-based identity generation  
-- PIID and VerifTag construction  
-- TagHash-based validation  
-- Hashgraph (validity + TTL)  
-- Secure broadcast (MNisender, MNiTag, MNihash)  
-- Post-quantum signatures (Dilithium2 via liboqs)  
-- Traffic simulation and visualization  
-- Latency vs vehicle density evaluation  
-
----
-
 ## Setup
 
 1. Install liboqs (with Dilithium2 support): https://github.com/open-quantum-safe/liboqs  
@@ -22,8 +9,11 @@
 2. Compile crypto module:
 
 cd crypto
+
 gcc -shared -o libpqc.so -fPIC pqc_sign.c -loqs   # Linux
+
 gcc -shared -o libpqc.dll -fPIC pqc_sign.c -loqs  # Windows
+
 gcc -shared -o libpqc.dylib -fPIC pqc_sign.c -loqs # macOS
 
 3. Install dependencies:
@@ -37,8 +27,11 @@ pip install -r requirements.txt
 python run_all.py --all
 
 Options:
---protocol → protocol test  
---eval → performance evaluation  
+
+--protocol → protocol test 
+
+--eval → performance evaluation 
+
 --viz → traffic visualization  
 
 ---
@@ -46,7 +39,9 @@ Options:
 ## Notes
 
 - This is a research prototype  
+
 - Hashgraph is a lightweight abstraction  
+
 - PQC uses liboqs (Dilithium2) via C integration  
 
 ---
@@ -54,4 +49,3 @@ Options:
 ## Author
 
 Mahima Mary Mathews  
-IIIT Kottayam
